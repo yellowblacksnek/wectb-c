@@ -1,5 +1,8 @@
 package ru.snek;
 
+import ru.snek.Collection.Malefactor;
+import ru.snek.Collection.MapWrapperUtils;
+
 import java.io.*;
 import java.net.*;
 import java.util.Map;
@@ -111,12 +114,18 @@ public class Client {
             else command = new Message<>(splitted[0], c.substring(c.indexOf(' ') + 1));
             if (command.getCommand().equals("import")) command = handleImport((String) command.getData());
             if (command.getCommand().equals("insert")) command = handleInsert((String) command.getData());
+
             con.send(command, waiter);
             waiter.setStage(2);
             if(command.getCommand().equals("quit")) return false;
             Message response = con.receive(waiter);
-            if (response == null) return false;
+            if (response == null) throw new Exception("Не знаю, когда это может случится, но всё-таки. В ответ пришло null.");
+
             responseString = processResponse(response);
+        } catch(IOException e) {
+            waiter.stop();
+            handleException(e);
+          return false;
         } catch (Exception e) {
             waiter.stop();
             handleException(e);

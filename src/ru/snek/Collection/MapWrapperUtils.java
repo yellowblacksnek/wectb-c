@@ -1,4 +1,6 @@
-package ru.snek;
+package ru.snek.Collection;
+
+import ru.snek.Utils;
 
 import java.util.*;
 

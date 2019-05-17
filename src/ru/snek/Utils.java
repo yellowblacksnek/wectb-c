@@ -111,6 +111,7 @@ public class Utils {
 
     public static int getSizeFromArr(byte[] sizeArr) throws IOException {
         Message message = (Message) objectFromByteArray(sizeArr);
+        if(!message.getCommand().equals("size")) return 0;
         return (Integer) message.getData();
     }
 

@@ -7,8 +7,6 @@ import java.nio.channels.DatagramChannel;
 import java.nio.channels.SocketChannel;
 import java.util.Arrays;
 
-import static ru.snek.Logger.*;
-import static ru.snek.Printer.log;
 import static ru.snek.Utils.*;
 
 public class Connection {
@@ -25,13 +23,12 @@ public class Connection {
 
     private int bufferSize = 2048;
     private final int maxBufferSize = 65507;//65507
-    private final int defaultTimeout = 10000;
+    private final int defaultTimeout = 20000;
 
     Connection(Type type, Realisation real, InetAddress addr, int port) throws IOException {
         if (type == Type.TCP) tcp = true;
         if (real == Realisation.STD) std = true;
         SocketAddress address = new InetSocketAddress(addr, port);
-        //connected = false;
         if (tcp) {
             if (std) {
                 socket = new Socket();
@@ -41,7 +38,6 @@ public class Connection {
                 channel = SocketChannel.open(address);
                 channel.socket().setSoTimeout(defaultTimeout);
             }
-            //connected = true;
         } else {
             if (std) {
                 dSocket = new DatagramSocket();
@@ -50,7 +46,6 @@ public class Connection {
                 dChannel = DatagramChannel.open();
                 dChannel.connect(address);
             }
-            //connected = checkUDP();
         }
     }
 
@@ -60,16 +55,17 @@ public class Connection {
         if (tcp) {
             int size = 0;
             int total = 0;
-            if(std) socket.setSoTimeout(defaultTimeout);
-            else channel.socket().setSoTimeout(defaultTimeout);
             do {
-                int read = std ? socket.getInputStream().read(buf.array(), total, buf.array().length - total) : channel.read(buf);
+                int read = std ? socket.getInputStream()
+                        .read(buf.array(), total, buf.array().length - total)
+                        : channel.read(buf);
                 if (read == -1) throw new EOFException();
                 if (size == 0) {
-                    if(std) socket.setSoTimeout(1000);
-                    else channel.socket().setSoTimeout(1000);
+                    if(std) socket.setSoTimeout(100);
+                    else channel.socket().setSoTimeout(100);
                     if(waiterOn) waiter.setStage(3);
                     size = getSizeFromArr(buf.array());
+                    if(size == 0) return errMsg("Пришли некорректные данные.");
                     byte[] cut = Arrays.copyOf(buf.array(), read);
                     byte[] extra = containsMore(cut);
                     buf = ByteBuffer.allocate(size);
@@ -80,20 +76,23 @@ public class Connection {
                 } else total += read;
                 if(waiterOn) waiter.setPercentage(getPercentage(total, size));
             } while (total < size);
+            if(std) socket.setSoTimeout(defaultTimeout);
+            else channel.socket().setSoTimeout(defaultTimeout);
         } else {
             if (std) {
                 dSocket.setSoTimeout(defaultTimeout);
                 DatagramPacket i = new DatagramPacket(buf.array(), buf.array().length);
                 dSocket.receive(i);
-                dSocket.setSoTimeout(10000);
+                dSocket.setSoTimeout(100);
             } else {
                 dChannel.socket().setSoTimeout(defaultTimeout);
                 dChannel.read(buf);
-                dChannel.socket().setSoTimeout(10000);
+                dChannel.socket().setSoTimeout(100);
 
             }
             if (waiterOn) waiter.setStage(3);
-            int size = (Integer) ((Message) objectFromByteArray(buf.array())).getData();
+            int size = getSizeFromArr(buf.array());
+            if(size == 0) return errMsg("Пришли некорректные данные.");
             int amount = size <= maxBufferSize ? 1 : (size / maxBufferSize + 1);
             byte[] bigBuf = new byte[amount > 1 ? amount*maxBufferSize : size];
             buf = ByteBuffer.wrap(bigBuf);
@@ -176,7 +175,13 @@ public class Connection {
             if (response == null) return false;
             if (((String) response.getData()).equals("ok!")) return true;
             else return false;
-        } catch (Exception e) { return false; }
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private Message errMsg(String error) {
+        return new Message<>("error", error);
     }
 
     public void close() {
