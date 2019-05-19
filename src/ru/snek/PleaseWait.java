@@ -27,7 +27,7 @@ class PleaseWait implements Runnable {
                 if(stop) break;
                 int timeToWait = 0;
                 if(stage == 0 || stage == 2) timeToWait = 250;
-                else timeToWait = 100;
+                else timeToWait = 50;
                 long current = System.currentTimeMillis();
                 long passed = current - lastUpdate;
                 if(passed > timeToWait) {
@@ -37,7 +37,7 @@ class PleaseWait implements Runnable {
                     clearLine();
                     print(toPrint+'\r');
                 }
-                Thread.sleep(300);
+                Thread.sleep(50);
             }
         }catch (InterruptedException e) { }
     }
@@ -81,29 +81,3 @@ class PleaseWait implements Runnable {
         clearLine();
     }
 }
-
-//                switch(stage) {
-//                    case 0:
-//                        long current = System.currentTimeMillis();
-//                        long passed = current - lastUpdate;
-//                        if(passed > timeToWait) {
-//                            toPrint = preparing + nextDots();
-//                            lastUpdate = current;
-//                        }
-//                        break;
-//                    case 1:
-//                        toPrint = sending + percentage +"%";
-//                        break;
-//                    case 2:
-//                }
-//                String add = "";
-//                if(count > dots+1) count = 1;
-//                for(int i = 0; i < count; ++i)
-//                    add += ".";
-//                add += '\r';
-//                    if (count == 4) {
-//                        clearLine();
-//                        print(s+'\r');
-//                    }
-//                    else print(s+add);
-//                    ++ count;

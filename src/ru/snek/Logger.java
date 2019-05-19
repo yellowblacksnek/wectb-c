@@ -21,7 +21,6 @@ public class Logger {
             return;
         }
         for(Exception e : logs) {
-            errprintln(e);
             e.printStackTrace();
         }
         logs.clear();

@@ -61,8 +61,8 @@ public class Connection {
                         : channel.read(buf);
                 if (read == -1) throw new EOFException();
                 if (size == 0) {
-                    if(std) socket.setSoTimeout(100);
-                    else channel.socket().setSoTimeout(100);
+                    if(std) socket.setSoTimeout(500);
+                    else channel.socket().setSoTimeout(500);
                     if(waiterOn) waiter.setStage(3);
                     size = getSizeFromArr(buf.array());
                     if(size == 0) return errMsg("Пришли некорректные данные.");
@@ -83,11 +83,11 @@ public class Connection {
                 dSocket.setSoTimeout(defaultTimeout);
                 DatagramPacket i = new DatagramPacket(buf.array(), buf.array().length);
                 dSocket.receive(i);
-                dSocket.setSoTimeout(100);
+                dSocket.setSoTimeout(500);
             } else {
                 dChannel.socket().setSoTimeout(defaultTimeout);
                 dChannel.read(buf);
-                dChannel.socket().setSoTimeout(100);
+                dChannel.socket().setSoTimeout(500);
 
             }
             if (waiterOn) waiter.setStage(3);
