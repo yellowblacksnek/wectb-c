@@ -25,13 +25,23 @@ public class Main {
             errprintln("Неправильный порт.");
             System.exit(1);
         }
-        File config = null;
-        try { config = openFile("clientConfig"); }
+        String config = null;
+        try { config = getFileString(openFile("clientConfig")); }
         catch (Exception e) {
             errprintln(e.getMessage());
             System.exit(1);
         }
-        Client client = new Client(getType(config),getRealisation(config));
+        config = config.replaceAll("\n", "").replaceAll("\\s+", " ");
+        Connection.Type type = null;
+        Connection.Realisation real = null;
+        try {
+            type = Connection.Type.valueOf(config.split(" ")[0]);
+            real = Connection.Realisation.valueOf(config.split(" ")[1]);
+        } catch (Exception e) {
+            errprintln("Неверный формат конфиг-файла.\n" + e.getMessage());
+            System.exit(1);
+        }
+        Client client = new Client(type, real);
         client.start(addr, port);
     }
 
