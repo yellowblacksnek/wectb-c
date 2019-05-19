@@ -19,9 +19,7 @@ class PleaseWait implements Runnable {
     @Override
     public void run() {
         try {
-            //Thread.sleep(200);
             String toPrint = "";
-            //int count = 0;
             long lastUpdate = System.currentTimeMillis();
             while(true) {
                 if(stop) break;

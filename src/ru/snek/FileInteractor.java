@@ -10,11 +10,9 @@ public class FileInteractor {
     public static File openFile(String path) throws Exception{
         File file = new File(path);
         if(!file.exists()) {
-            //errprintln("Файл не существует: " + file.getPath());
             throw new Exception("Файл не существует: " + file.getPath());
         }
         if(!(file.canRead() && file.canWrite())) {
-            //errprintln("Нет нужных прав для работы с файлом!");
             throw new Exception("Нет нужных прав для работы с файлом!");
         }
         return file;

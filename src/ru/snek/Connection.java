@@ -22,7 +22,7 @@ public class Connection {
     private DatagramChannel dChannel;
 
     private int bufferSize = 2048;
-    private final int maxBufferSize = 65507;//65507
+    private final int maxBufferSize = 65507;
     private final int defaultTimeout = 20000;
 
     Connection(Type type, Realisation real, InetAddress addr, int port) throws IOException {
@@ -195,12 +195,4 @@ public class Connection {
             }
         } catch(IOException e) {  }
     }
-
-    /*public boolean isConnected(){
-        if(tcp) {
-            return std ? !socket.isClosed() : channel.isConnected();
-        } else {
-            return checkConnection();
-        }
-    }*/
 }

@@ -104,9 +104,8 @@ public class Client {
             printLogs();
             return true;
         }
-        String responseString = null;
+        String responseString;
         PleaseWait waiter = new PleaseWait();
-        Thread thread  = new Thread();
         try {
             String[] splitted = c.split(" ");
             Message command;
@@ -119,7 +118,7 @@ public class Client {
             waiter.setStage(2);
             if(command.getCommand().equals("quit")) return false;
             Message response = con.receive(waiter);
-            if (response == null) throw new Exception("Не знаю, когда это может случится, но всё-таки. В ответ пришло null.");
+            if (response == null) throw new Exception("В ответ пришло null.");
 
             responseString = processResponse(response);
         } catch(IOException e) {
