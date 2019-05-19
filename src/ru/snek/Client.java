@@ -1,6 +1,7 @@
 package ru.snek;
 
 import ru.snek.Collection.Malefactor;
+import ru.snek.Collection.MapValuesComparator;
 import ru.snek.Collection.MapWrapperUtils;
 
 import java.io.*;
@@ -157,6 +158,7 @@ public class Client {
     private String processResponse(Message res) {
         if (res.getCommand().equals("show")) {
             Map<String, Malefactor> map = (Map) res.getData();
+            new MapValuesComparator(map, MapValuesComparator.Sorting.DEF); //does nothing
             StringBuilder message = new StringBuilder();
             if (map.size() == 0) return "Коллекция пуста.";
             else {
